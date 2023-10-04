@@ -2,6 +2,8 @@ from django.shortcuts import render,  get_object_or_404
 from django.views.generic import DetailView, ListView, TemplateView
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib import messages
+
 
 # Create your views here.
 
@@ -63,11 +65,16 @@ def get_post(request, post_id):
 
 class PostCreateView(CreateView):
     model = Post
-    template_name = 'post/post_form.html'
+    template_name = 'blog/post_form.html'
+    success_url = reverse_lazy('posts_all') # A rota de sucesso foi alterada
     # fields = ('body_text', )
-    # success_url = reverse_lazy('posts_list')
-    success_url = reverse_lazy('posts_all') # modifiquei para ir direto no template da aula do dia 20/09
     form_class = PostModelForm
+    success_message = 'Postagem salva com sucesso.'
+
+def form_valid(self, request, *args, **kwargs):
+    messages.success(self.request, self.success_message)
+    return super(PostCreateView, self).form_valid(request, *args, **kwargs)
+
 
 @csrf_exempt
 def create_post(request):
